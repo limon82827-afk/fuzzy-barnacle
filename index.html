@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>旧案重查 · 刑警叙事悬疑（终极加长版）</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            background: #1a1e2a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Segoe UI', 'Roboto', system-ui, monospace;
+            padding: 12px;
+        }
+        .phone {
+            max-width: 420px;
+            width: 100%;
+            height: 760px;
+            background: #0f1119;
+            border-radius: 44px;
+            box-shadow: 0 25px 35px rgba(0,0,0,0.5), 0 0 0 6px #2e3242, 0 0 0 10px #1c1f2c;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        .status-bar {
+            padding: 12px 20px 6px;
+            background: #0f1119;
+            color: #ccddf8;
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            font-weight: 500;
+            border-bottom: 1px solid #2b2e42;
+        }
+        .screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px;
+            background: #07090f;
+            scroll-behavior: smooth;
+        }
+        .ui-card {
+            background: rgba(18, 20, 30, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: 28px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #3a3b5c;
+            transition: all 0.2s;
+        }
+        .ui-header {
+            font-size: 18px;
+            font-weight: bold;
+            color: #c2b0ff;
+            border-left: 5px solid #7f63b0;
+            padding-left: 14px;
+            margin-bottom: 18px;
+        }
+        .story-text {
+            color: #eef2ff;
+            font-size: 15px;
+            line-height: 1.45;
+            margin-bottom: 18px;
+            white-space: pre-wrap;
+        }
+        .evidence-bar {
+            background: #10131fcc;
+            border-radius: 24px;
+            padding: 10px 14px;
+            margin-bottom: 16px;
+            font-size: 12px;
+            color: #bbaaee;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .search-area {
+            margin: 16px 0;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .search-box input {
+            flex: 1;
+            background: #000000aa;
+            border: 1px solid #7869b0;
+            border-radius: 60px;
+            padding: 10px 16px;
+            color: white;
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .search-box button {
+            background: #3c2e5e;
+            border: none;
+            border-radius: 40px;
+            padding: 0 18px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .option-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        .opt-btn {
+            background: #202236;
+            border: 1px solid #7b6ab0;
+            border-radius: 60px;
+            padding: 12px 16px;
+            color: #f0eaff;
+            text-align: left;
+            cursor: pointer;
+            font-family: inherit;
+            transition: 0.05s linear;
+        }
+        .opt-btn:active {
+            background: #3b2d62;
+            transform: scale(0.97);
+        }
+        .win-window {
+            background: #ece9d8;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #0a2472;
+            margin-bottom: 16px;
+        }
+        .win-title {
+            background: #0a2472;
+            color: white;
+            padding: 6px 12px;
+            font-weight: bold;
+        }
+        .win-content {
+            background: #ffffff;
+            padding: 14px;
+            color: #000;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .scene-photo {
+            background: #1e1f2c;
+            border-radius: 20px;
+            padding: 12px;
+            margin: 12px 0;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .photo-item {
+            background: #00000066;
+            border-radius: 16px;
+            padding: 10px;
+            flex: 1;
+            text-align: center;
+        }
+        hr {
+            border-color: #3f3a60;
+            margin: 14px 0;
+        }
+        .glow {
+            color: #ffbf7a;
+        }
+        .bottom-bar {
+            background: #0a0c14cc;
+            backdrop-filter: blur(20px);
+            padding: 8px 20px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 1px solid #363258;
+        }
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #cdc2ff;
+            font-size: 14px;
+            cursor: pointer;
+            padding: 6px;
+        }
+        .note {
+            font-size: 12px;
+            color: #aaa5d0;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+<div class="phone" id="gameRoot">
+    <div class="status-bar">
+        <span id="liveTime">09:41</span>
+        <span>🔋 警用终端 | 加密</span>
+    </div>
+    <div class="screen" id="gameScreen">
+        <div id="evidencePanel" class="evidence-bar">📁 线索/证据: 无</div>
+        <div id="dynamicUI"></div>
+    </div>
+    <div class="bottom-bar">
+        <button class="icon-btn" id="resetGameBtn">🔄 重开档案</button>
+        <span style="font-size:11px;">王开权 · 旧案重查·终极版</span>
+    </div>
+</div>
+
+<script>
+    // ======================= 游戏核心状态（终极扩展版） =======================
+    let currentSceneId = "office_main";
+    let inventory = [];             // 线索列表
+    let trustPoints = 0;            // 与郑添浩好感度 -5~5
+    let timeOfDay = 0;              // 0=上午,1=下午,2=夜晚, 影响部分场景对话
+    let gameRound = 0;              // 记录行动次数，用于事件触发
+    let caseProgress = {
+        newCaseOpened: false,
+        archivePasswordFound: false,
+        carOwnerFound: false,
+        phoneDataDecrypted: false,
+        wangDiaryDecoded: false,
+        confrontationDone: false,
+        finalEvidenceCollected: false,
+        visitedTech: false,
+        interrogatedZhou: false,
+        listenedTape: false,
+        hospitalVisited: false,
+        forensicReportGot: false,
+        wangHouseKey: false,
+        friendTestimony: false,
+        timeMachineUnlocked: false   // 隐藏彩蛋
+    };
+    let hiddenFlags = {
+        wangZhengzeHouseKey: false,
+        zhengSideStory: false,
+        medicalRecordFound: false,
+        secretMeeting: false
+    };
+    
+    // 辅助函数
+    function updateEvidenceUI() {
+        const panel = document.getElementById("evidencePanel");
+        if(inventory.length === 0) panel.innerHTML = "📁 线索/证据: 无";
+        else panel.innerHTML = "📁 线索/证据: " + inventory.join(" · ");
+    }
+    function addEvidence(ev) {
+        if(!inventory.includes(ev)) inventory.push(ev);
+        updateEvidenceUI();
+    }
+    function hasEvidence(ev) { return inventory.includes(ev); }
+    function removeEvidence(ev) {
+        inventory = inventory.filter(i => i !== ev);
+        updateEvidenceUI();
+    }
+    function modifyTrust(delta) {
+        trustPoints = Math.min(5, Math.max(-5, trustPoints + delta));
+    }
+    function advanceTime() {
+        gameRound++;
+        if(gameRound % 5 === 0) {
+            timeOfDay = (timeOfDay + 1) % 3;
+            document.getElementById("liveTime").innerText = timeOfDay === 0 ? "10:00" : (timeOfDay === 1 ? "15:30" : "21:15");
+        }
+    }
+    
+    // 全局渲染函数（包含超过40个场景，大量分支）
+    function renderScene() {
+        const container = document.getElementById("dynamicUI");
+        if(!container) return;
+        let html = "";
+        
+        // ========= 第一章 办公室及初始交互（扩展版） =========
+        if(currentSceneId === "office_main") {
+            html = `
+                <div class="win-window">
+                    <div class="win-title">📁 刑警队办公室 - 王开权工位 (Windows XP风格)</div>
+                    <div class="win-content">
+                        <div style="margin-bottom:12px;">📂 桌面图标: 旧案卷宗 / 内部通讯 / 证据库 / 加密邮件</div>
+                        <div class="search-area">
+                            <div class="search-box">
+                                <input type="text" id="deskSearch" placeholder="搜索关键词... (雨夜案/李秀英/王正泽/医院)">
+                                <button id="searchDeskBtn">🔍 检索档案</button>
+                            </div>
+                        </div>
+                        <div id="deskFeedback" class="story-text" style="color:#000; font-size:13px;"></div>
+                        <hr>
+                        <div class="option-buttons">
+                            <button class="opt-btn" id="talkCaptainBtn">👮 前往队长办公室申请重启案件</button>
+                            <button class="opt-btn" id="meetZhengBtn">👥 与新搭档郑添浩见面</button>
+                            <button class="opt-btn" id="homeInvestigateBtn">🏠 回家调查（回忆线索）</button>
+                            <button class="opt-btn" id="interrogateOldBtn">🚨 提审旧案关联人周国栋</button>
+                            <button class="opt-btn" id="hospitalVisitBtn">🏥 前往济仁医院调查</button>
+                            <button class="opt-btn" id="forensicVisitBtn">🔬 找陈法医查阅旧毒理报告</button>
+                            <button class="opt-btn" id="archiveVisitBtn">📚 去档案室挖掘尘封记录</button>
+                            <button class="opt-btn" id="techVisitBtn">💻 技术科分析物证</button>
+                        </div>
+                        <div class="note">提示：多次调查不同地点可获得更多线索，最终指向真凶。</div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML = html;
+            // 搜索功能
+            document.getElementById("searchDeskBtn")?.addEventListener("click", () => {
+                const kw = document.getElementById("deskSearch")?.value.trim().toLowerCase();
+                const fb = document.getElementById("deskFeedback");
+                if(!fb) return;
+                if(kw.includes("雨夜") || kw.includes("雨夜案") || kw.includes("1999")) {
+                    fb.innerHTML = "✅ 找到旧案卷宗：1999-2005年间6起雨夜杀人案，受害者均为中年女性，现场留有X标记。你的妻子李秀英是第7名失踪者。获得【旧案卷宗】。";
+                    addEvidence("旧案卷宗");
+                } else if(kw.includes("李秀英")) {
+                    fb.innerHTML = "🔍 李秀英，你的妻子，2005年失踪，案件档案中标注为疑似关联。未发现尸体。档案中有一张照片背后写着'王正泽'。";
+                    addEvidence("李秀英照片");
+                } else if(kw.includes("王正泽")) {
+                    fb.innerHTML = "⚠️ 法医王正泽曾因医疗事故被停职，与你妻子有过接触。有匿名举报信提到他涉及非法器官交易。获得【匿名举报信】。";
+                    addEvidence("匿名举报信");
+                } else if(kw.includes("x标记")) {
+                    fb.innerHTML = "X标记符号疑似与医学手术标记有关，凶手的职业背景很可能是医生或法医。";
+                } else if(kw.includes("医院")) {
+                    fb.innerHTML = "济仁医院，王正泽曾工作的地方，多名受害者曾在此就诊。";
+                } else {
+                    fb.innerHTML = "❌ 未找到相关记录。试试‘雨夜案’、‘李秀英’、‘王正泽’、‘医院’。";
+                }
+            });
+            document.getElementById("talkCaptainBtn")?.addEventListener("click", () => { addEvidence("队长批准重启"); currentSceneId = "captain_office"; renderScene(); advanceTime(); });
+            document.getElementById("meetZhengBtn")?.addEventListener("click", () => { currentSceneId = "meet_zheng"; renderScene(); advanceTime(); });
+            document.getElementById("homeInvestigateBtn")?.addEventListener("click", () => { currentSceneId = "home"; renderScene(); advanceTime(); });
+            document.getElementById("interrogateOldBtn")?.addEventListener("click", () => { currentSceneId = "interrogation"; renderScene(); advanceTime(); });
+            document.getElementById("hospitalVisitBtn")?.addEventListener("click", () => { currentSceneId = "hospital_investigation"; renderScene(); advanceTime(); });
+            document.getElementById("forensicVisitBtn")?.addEventListener("click", () => { currentSceneId = "forensic_room"; renderScene(); advanceTime(); });
+            document.getElementById("archiveVisitBtn")?.addEventListener("click", () => { currentSceneId = "archive_room"; renderScene(); advanceTime(); });
+            document.getElementById("techVisitBtn")?.addEventListener("click", () => { currentSceneId = "tech_room"; renderScene(); advanceTime(); });
+        }
+        else if(currentSceneId === "captain_office") {
+            html = `<div class="ui-card"><div class="ui-header">👮 队长办公室 - 刘建国</div>
+            <div class="story-text">刘建国：“老王，你申请重启雨夜案？现在有新线索吗？最近上面压力也大，你要确保能破案。”<br>他递过一杯茶，等待你的回答。</div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="tellTruth">📢 坦诚相告：我怀疑和秀英失踪有关，我找到了新证据</button>
+                <button class="opt-btn" id="hideFeel">🤐 只说新案类似，不提私情，但强调紧迫性</button>
+                <button class="opt-btn" id="askResources">📊 请求增加技术支持和人力</button>
+                <button class="opt-btn" id="showEvidenceList">📋 出示已收集的部分线索</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("tellTruth")?.addEventListener("click", () => { addEvidence("队长同情并批准重启"); modifyTrust(1); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("hideFeel")?.addEventListener("click", () => { addEvidence("案件重启·公式化批准"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("askResources")?.addEventListener("click", () => { addEvidence("额外技术支持承诺"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("showEvidenceList")?.addEventListener("click", () => { addEvidence("队长重视线索"); currentSceneId = "office_main"; renderScene(); });
+        }
+        else if(currentSceneId === "meet_zheng") {
+            html = `<div class="ui-card"><div class="ui-header">👥 案情分析室 - 初次见面</div>
+            <div class="story-text">郑添浩向你敬礼：“王队，我是郑添浩，犯罪心理学硕士。请多指教。我看过雨夜案的旧档案，有些想法想和您探讨。” 他递过一份新案简报。</div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="trustYoung">🤝 信任年轻人，分享旧案细节和你的私人动机</button>
+                <button class="opt-btn" id="cautious">🛡️ 保持距离，只给基本信息，观察他的反应</button>
+                <button class="opt-btn" id="testHisSkill">🧠 测试他的推理能力，抛出几个未解疑点</button>
+                <button class="opt-btn" id="askHisBackground">📜 询问他的家庭背景和来队原因</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("trustYoung")?.addEventListener("click", () => { modifyTrust(2); addEvidence("与郑添浩建立合作信任"); currentSceneId = "case_analysis_first"; renderScene(); });
+            document.getElementById("cautious")?.addEventListener("click", () => { modifyTrust(-1); currentSceneId = "case_analysis_first"; renderScene(); });
+            document.getElementById("testHisSkill")?.addEventListener("click", () => { modifyTrust(1); addEvidence("郑添浩推理出色"); currentSceneId = "case_analysis_first"; renderScene(); });
+            document.getElementById("askHisBackground")?.addEventListener("click", () => { modifyTrust(0); addEvidence("郑添浩含糊其辞"); currentSceneId = "case_analysis_first"; renderScene(); });
+        }
+        else if(currentSceneId === "case_analysis_first") {
+            html = `<div class="ui-card"><div class="ui-header">📊 案件分析室（白板+投影）</div>
+            <div class="story-text">你们一起分析旧案资料。郑添浩指出：“X标记可能与某个医疗符号有关。凶手可能具有医学背景。另外，所有受害者都曾在一家私立医院就诊过——济仁医院。”</div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="gotoNewCase">🚔 前往新案发现场（最新一起案件）</button>
+                <button class="opt-btn" id="askHospital">🏥 深入调查济仁医院的背景</button>
+                <button class="opt-btn" id="reExamineOld">📑 重新审查旧案物证</button>
+                <button class="opt-btn" id="checkWitnessList">👥 查看当年证人名单</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("gotoNewCase")?.addEventListener("click", () => { currentSceneId = "crime_scene"; renderScene(); });
+            document.getElementById("askHospital")?.addEventListener("click", () => { addEvidence("济仁医院可疑记录"); currentSceneId = "hospital_investigation"; renderScene(); });
+            document.getElementById("reExamineOld")?.addEventListener("click", () => { addEvidence("旧案物证重新检验"); currentSceneId = "archive_room"; renderScene(); });
+            document.getElementById("checkWitnessList")?.addEventListener("click", () => { addEvidence("证人名单中找到王正泽"); currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 医院调查分支（扩展） =========
+        else if(currentSceneId === "hospital_investigation") {
+            html = `<div class="ui-card"><div class="ui-header">🏥 济仁医院 - 暗访</div>
+            <div class="story-text">你和郑添浩以卫生局名义调取当年病历。档案室管理员透露，王正泽曾是这里的外科主任，2004年因违规器官移植被悄悄解聘。</div>
+            <div class="search-area"><div class="search-box"><input id="hospitalSearch" placeholder="搜索关键词: 器官移植/名单/王正泽/李秀英"><button id="hospitalBtn">🔍 查阅</button></div></div>
+            <div id="hospitalFeedback"></div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="talkToNurse">💬 找当年护士询问</button>
+                <button class="opt-btn" id="backToAnalysis">⬅️ 返回分析室</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("hospitalBtn")?.addEventListener("click", () => {
+                const kw = document.getElementById("hospitalSearch")?.value.trim().toLowerCase();
+                const fb = document.getElementById("hospitalFeedback");
+                if(kw.includes("器官移植")) {
+                    fb.innerHTML = "发现一份非法器官交易名单，其中包含李秀英的名字。获得【非法移植名单】。";
+                    addEvidence("非法移植名单");
+                } else if(kw.includes("王正泽")) {
+                    fb.innerHTML = "王正泽的离职档案中有一封举报信，称他与黑市器官买卖有关。获得【举报信复印件】。";
+                    addEvidence("举报信复印件");
+                } else if(kw.includes("李秀英")) {
+                    fb.innerHTML = "李秀英的病历显示她曾举报医院违规，后来病历被篡改。获得【篡改病历证据】。";
+                    addEvidence("篡改病历证据");
+                } else fb.innerHTML = "暂无更多记录。试试‘器官移植’、‘王正泽’、‘李秀英’。";
+            });
+            document.getElementById("talkToNurse")?.addEventListener("click", () => {
+                addEvidence("护士证言：王正泽曾威胁李秀英");
+                currentSceneId = "office_main";
+                renderScene();
+            });
+            document.getElementById("backToAnalysis")?.addEventListener("click", () => {
+                currentSceneId = "case_analysis_first";
+                renderScene();
+            });
+        }
+        
+        // ========= 案发现场（加强交互） =========
+        else if(currentSceneId === "crime_scene") {
+            html = `<div class="ui-card"><div class="ui-header">🚨 案发现场 · 新建小区花园</div>
+            <div class="scene-photo">
+                <div class="photo-item">📷 尸体勒痕特写</div>
+                <div class="photo-item">🖼️ 地面X标记</div>
+                <div class="photo-item">🚗 监控可疑车辆</div>
+                <div class="photo-item">📱 受害者手机</div>
+                <div class="photo-item">🧣 遗留围巾</div>
+            </div>
+            <div class="search-area"><div class="search-box"><input id="sceneSearch" placeholder="调查: 尸体/监控/遗留物/手机/围巾"><button id="sceneBtn">🔍 勘察</button></div></div>
+            <div id="sceneFeedback" class="story-text"></div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="gotoForensic">🔬 前往法医室</button>
+                <button class="opt-btn" id="gotoTechCar">🚗 技术科分析车辆</button>
+                <button class="opt-btn" id="questionWitness">👥 询问附近居民</button>
+                <button class="opt-btn" id="backToOffice">🏢 返回刑警队</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("sceneBtn")?.addEventListener("click", () => {
+                const kw = document.getElementById("sceneSearch")?.value.trim().toLowerCase();
+                const fb = document.getElementById("sceneFeedback");
+                if(kw.includes("监控")) {
+                    fb.innerHTML = "监控捕捉到一辆黑色轿车，车牌后四位为 'E831'。获得线索【可疑车牌E831】";
+                    addEvidence("可疑车牌E831");
+                } else if(kw.includes("遗留物") || kw.includes("纸片")) {
+                    fb.innerHTML = "发现一张湿透的纸片，写着数字 '7.29' 。获得线索【日期7.29】";
+                    addEvidence("日期7.29");
+                } else if(kw.includes("手机")) {
+                    fb.innerHTML = "受害者手机已锁定，需要密码。提示可能是生日或纪念日。";
+                    addEvidence("受害者手机物证");
+                } else if(kw.includes("尸体")) {
+                    fb.innerHTML = "死者颈部有勒痕，与旧案手法一致。体内检测出镇静剂三唑仑。";
+                    addEvidence("新案毒理报告");
+                } else if(kw.includes("围巾")) {
+                    fb.innerHTML = "围巾上有微量血迹，DNA 不属于死者，可能属于凶手。";
+                    addEvidence("围巾DNA证据");
+                } else fb.innerHTML = "没有新发现。试试‘监控’、‘遗留物’、‘手机’、‘围巾’。";
+            });
+            document.getElementById("gotoForensic")?.addEventListener("click", () => { currentSceneId = "forensic_room"; renderScene(); });
+            document.getElementById("gotoTechCar")?.addEventListener("click", () => { currentSceneId = "tech_room"; renderScene(); });
+            document.getElementById("questionWitness")?.addEventListener("click", () => { addEvidence("邻居看到黑色轿车常在夜间出没"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("backToOffice")?.addEventListener("click", () => { currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 法医室扩展 =========
+        else if(currentSceneId === "forensic_room") {
+            html = `<div class="ui-card"><div class="ui-header">🔬 法医鉴定室 - 陈法医</div>
+            <div class="story-text">陈法医：“新案和旧案毒理一致，都是三唑仑。但当年旧案的毒理报告缺失了一部分，最近我在旧档案柜底部找到了碎片。” 他递给你一张残缺的化验单。</div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="askOldCase">📜 详细拼接毒理报告</button>
+                <button class="opt-btn" id="askSedative">💊 询问镇静剂来源</button>
+                <button class="opt-btn" id="compareDNA">🧬 比对围巾DNA</button>
+                <button class="opt-btn" id="backToOffice">🏢 返回</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("askOldCase")?.addEventListener("click", () => { addEvidence("完整毒理报告(含王正泽签名)"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("askSedative")?.addEventListener("click", () => { addEvidence("镇静剂采购记录指向私立医院"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("compareDNA")?.addEventListener("click", () => { addEvidence("DNA与王正泽亲属匹配"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("backToOffice")?.addEventListener("click", () => { currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 技术科 =========
+        else if(currentSceneId === "tech_room") {
+            html = `<div class="ui-card"><div class="ui-header">💻 技术科 - 车辆分析 & 手机取证</div>
+            <div class="story-text">技术员小马：“根据车牌E831，车主是王正泽。同时通过基站定位，案发时段他就在现场附近。” 他还破解了受害者手机，里面有一条加密短信。</div>
+            <div class="search-area"><div class="search-box"><input id="techSearch" placeholder="分析手机内容关键词"><button id="techBtn">🔎 解密</button></div></div>
+            <div id="techFeedback"></div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="confirmWang">🔍 确认王正泽为嫌疑人</button>
+                <button class="opt-btn" id="trackPhone">📞 追踪王正泽通讯记录</button>
+                <button class="opt-btn" id="backOffice">← 返回</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("techBtn")?.addEventListener("click", () => {
+                const kw = document.getElementById("techSearch")?.value.trim().toLowerCase();
+                const fb = document.getElementById("techFeedback");
+                if(kw.includes("短信") || kw.includes("加密")) {
+                    fb.innerHTML = "短信内容：‘7月29日老地方，东西已备好。——王’。获得【关键短信证据】。";
+                    addEvidence("关键短信证据");
+                    caseProgress.phoneDataDecrypted = true;
+                } else fb.innerHTML = "试着输入‘短信’或‘加密’。";
+            });
+            document.getElementById("confirmWang")?.addEventListener("click", () => { addEvidence("王正泽车牌+定位证据"); caseProgress.carOwnerFound = true; currentSceneId = "confrontation"; renderScene(); });
+            document.getElementById("trackPhone")?.addEventListener("click", () => { addEvidence("王正泽与周国栋频繁联系"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("backOffice")?.addEventListener("click", () => { currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 家（深度回忆，多物品） =========
+        else if(currentSceneId === "home") {
+            html = `<div class="ui-card"><div class="ui-header">🏠 王开权的家 - 回忆角落</div>
+            <div class="story-text">妻子李秀英的照片还摆在书架上。旧录音机、日记本、一盒磁带、一个上锁的抽屉。</div>
+            <div class="search-area"><div class="search-box"><input id="homeSearch" placeholder="调查: 录音带/日记/相册/抽屉/磁带"><button id="homeBtn">查看</button></div></div>
+            <div id="homeFeedback"></div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="leaveHome">🚪 返回警局</button>
+                <button class="opt-btn" id="searchMore">🔍 仔细检查卧室</button>
+                <button class="opt-btn" id="listenTapeAgain">📼 反复听录音带（可能遗漏细节）</button>
+            </div></div>`;
+            container.innerHTML = html;
+            document.getElementById("homeBtn")?.addEventListener("click", () => {
+                const kw = document.getElementById("homeSearch")?.value.trim().toLowerCase();
+                const fb = document.getElementById("homeFeedback");
+                if(kw.includes("录音带")) {
+                    fb.innerHTML = "📼 录音带里妻子说：‘王正泽来家里吃饭，他提到了医院地下手术室……我担心他在做非法移植。’ 获得【重要录音】";
+                    addEvidence("重要录音");
+                    caseProgress.listenedTape = true;
+                } else if(kw.includes("日记")) {
+                    fb.innerHTML = "日记本最后一页：'如果有一天我出事，一定是王正泽，他威胁过我。' 获得【日记指控】。";
+                    addEvidence("日记指控");
+                } else if(kw.includes("相册")) {
+                    fb.innerHTML = "相册里夹着一张济仁医院的缴费单，日期是2004年。获得【医院缴费单】。";
+                    addEvidence("医院缴费单");
+                } else if(kw.includes("抽屉")) {
+                    fb.innerHTML = "抽屉上锁，密码可能是妻子生日。输入0729打开，里面有一把钥匙和一张王正泽的照片。获得【神秘钥匙】。";
+                    addEvidence("神秘钥匙");
+                    hiddenFlags.wangZhengzeHouseKey = true;
+                } else fb.innerHTML = "试试‘录音带’、‘日记’、‘相册’、‘抽屉’。";
+            });
+            document.getElementById("searchMore")?.addEventListener("click", () => { addEvidence("妻子遗物: 钥匙一把"); hiddenFlags.wangZhengzeHouseKey = true; currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("listenTapeAgain")?.addEventListener("click", () => { addEvidence("录音带背景音有钟表声，指向某个地点"); currentSceneId = "office_main"; renderScene(); });
+            document.getElementById("leaveHome")?.addEventListener("click", () => { currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 审讯室扩展（多轮对话） =========
+        else if(currentSceneId === "interrogation") {
+            html = `<div class="ui-card"><div class="ui-header">🚨 审讯室 - 嫌疑人周国栋（旧案关联人）</div>
+            <div class="story-text">周国栋，当年王正泽的助手。你已有部分证据，选择审讯策略。</div>
+            <div class="option-buttons">
+                <button class="opt-btn" id="askAlibi">⏳ 询问不在场证明</button>
+                <button class="opt-btn" id="askWangRel">🔪 问他和王正泽的关系</button>
+                <button class="opt-btn" id="askMark">❓ 问X标记含义</button>
+                <button class="opt-btn" id="showEvidence">📄 出示非法移植名单施压</button>
+                <button class="opt-btn" id="threaten">⚠️ 威胁要追究他包庇罪</button>
+            </div>
+            <div id="interFeedback" class="story-text"></div>
+            <div class="option-buttons"><button class="opt-btn" id="endInter">🔚 结束审讯</button></div></div>`;
+            container.innerHTML = html;
+            const fbDiv = document.getElementById("interFeedback");
+            document.getElementById("askAlibi")?.addEventListener("click", ()=>{ fbDiv.innerHTML = "周：那天我在外地，有车票记录。但证据显示车票可能是伪造。"; addEvidence("周国栋可疑车票"); });
+            document.getElementById("askWangRel")?.addEventListener("click", ()=>{ fbDiv.innerHTML = "周：王正泽以前是我的导师，他……有点古怪。他恨李秀英举报他。"; addEvidence("王正泽的动机"); });
+            document.getElementById("askMark")?.addEventListener("click", ()=>{ fbDiv.innerHTML = "周：X代表切除，他做手术时喜欢留标记。这是他的签名。"; addEvidence("X标记含义"); });
+            document.getElementById("showEvidence")?.addEventListener("click", ()=>{ 
+                fbDiv.innerHTML = "周看到名单后崩溃，承认王正泽指使他伪造过死亡证明。获得【周国栋口供】。";
+                addEvidence("周国栋口供");
+                caseProgress.interrogatedZhou = true;
+            });
+            document.getElementById("threaten")?.addEventListener("click", ()=>{ fbDiv.innerHTML = "周国栋害怕，供出王正泽的藏匿地点。"; addEvidence("藏匿地点线索"); });
+            document.getElementById("endInter")?.addEventListener("click", () => { currentSceneId = "office_main"; renderScene(); });
+        }
+        
+        // ========= 档案室解谜（扩展） =========
+        else if(currentSceneId === "archive_room") {
+            html = `<div class="ui-card"><div class="ui-header">📚 市局档案室 - 尘封证据</div>
+            <div class="story-text">需要输入密码才能调取旧案人员详细档案。提示：密码与李秀英有关（生日）。</div>
+            <div class="search-box"><input id="pwdInput" placeholder="输入数字密码"><button id="pwdBtn">解锁</button></div>
+            <div id="archiveMsg"></div>
+            <div class="option-buttons"><button class="opt-btn" id="backFromArchive">🔙 返回</button></div></div
