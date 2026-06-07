@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>回声迷踪 - 悬疑文字探险</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* 避免选中文字干扰沉浸感，但保留复制功能可选 */
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a0c12;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'SF Pro Text', 'Roboto', monospace;
+            padding: 16px;
+        }
+
+        /* 手机外壳 */
+        .phone {
+            max-width: 400px;
+            width: 100%;
+            height: 700px;
+            background: #111216;
+            border-radius: 44px;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.5), 0 0 0 8px #2c2e3a, 0 0 0 12px #1e1f28;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 动态岛/状态栏 */
+        .status-bar {
+            padding: 14px 24px 8px 24px;
+            background: #111216;
+            color: #e0e0e0;
+            font-size: 15px;
+            font-weight: 590;
+            display: flex;
+            justify-content: space-between;
+            font-family: monospace;
+            letter-spacing: 0.2px;
+            border-bottom: 0.5px solid rgba(255,255,255,0.08);
+        }
+
+        .time {
+            font-weight: 600;
+        }
+
+        .battery {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        /* 主内容区域，滚动 */
+        .screen {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 18px;
+            scroll-behavior: smooth;
+            background: radial-gradient(circle at 20% 30%, #13161f, #0b0d12);
+            background-attachment: local;
+        }
+
+        /* 故事卡片 */
+        .story-card {
+            background: rgba(20, 22, 32, 0.75);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 20px 18px;
+            margin-bottom: 24px;
+            border: 0.5px solid rgba(255,255,255,0.1);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: all 0.2s ease;
+        }
+
+        .story-text {
+            color: #eef2ff;
+            font-size: 17px;
+            line-height: 1.5;
+            letter-spacing: 0.2px;
+            text-shadow: 0 1px 2px black;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        /* 额外悬疑线索样式 */
+        .clue-text {
+            background: #1e1a2b;
+            border-left: 4px solid #b84c8c;
+            padding: 12px 16px;
+            margin: 16px 0 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 15px;
+            color: #d9b8e6;
+            border-radius: 12px;
+        }
+
+        .glitch {
+            animation: glitch 0.8s infinite;
+            color: #ffb7b2;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: -1px 0 red; opacity: 0.9; }
+            50% { text-shadow: 1px 0 blue; opacity: 1; }
+            100% { text-shadow: -1px 0 red; opacity: 0.9; }
+        }
+
+        /* 选项按钮区域 */
+        .options-area {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .option-btn {
+            background: rgba(30, 34, 48, 0.9);
+            border: 1px solid rgba(130, 100, 180, 0.5);
+            border-radius: 60px;
+            padding: 14px 18px;
+            color: #f0eefc;
+            font-size: 16px;
+            font-weight: 500;
+            text-align: left;
+            transition: all 0.2s;
+            backdrop-filter: blur(4px);
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .option-btn:active {
+            background: #342b4a;
+            transform: scale(0.97);
+            border-color: #b77dd9;
+        }
+
+        /* 密码输入面板 */
+        .puzzle-panel {
+            background: #0e0c16cc;
+            border-radius: 28px;
+            padding: 16px;
+            margin-top: 16px;
+            border: 1px solid #3e2b4e;
+        }
+
+        .puzzle-input {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+            justify-content: center;
+        }
+
+        .puzzle-input input {
+            background: #000000aa;
+            border: 1px solid #a77bcb;
+            padding: 12px;
+            border-radius: 32px;
+            color: white;
+            font-size: 20px;
+            text-align: center;
+            width: 140px;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        .puzzle-submit {
+            background: #6d4b8c;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* 底部工具栏 */
+        .bottom-bar {
+            background: #0d0f17cc;
+            backdrop-filter: blur(20px);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            border-top: 0.5px solid #2c2a3a;
+            font-size: 14px;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            color: #ccc5e6;
+            font-size: 20px;
+            padding: 8px 12px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+
+        .icon-btn:active {
+            background: #2a253c;
+        }
+
+        /* 自定义滚动条 */
+        .screen::-webkit-scrollbar {
+            width: 4px;
+        }
+        .screen::-webkit-scrollbar-track {
+            background: #1e1a2b;
+        }
+        .screen::-webkit-scrollbar-thumb {
+            background: #7e5a9c;
+            border-radius: 10px;
+        }
+
+        /* 结局特殊效果 */
+        .ending-badge {
+            text-align: center;
+            font-size: 20px;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 36px;
+            background: #00000066;
+            color: #ffd966;
+        }
+    </style>
+</head>
+<body>
+<div class="phone" id="gameContainer">
+    <div class="status-bar">
+        <span class="time" id="liveTime">9:41</span>
+        <span class="battery">📶 🔋 98%</span>
+    </div>
+    <div class="screen" id="gameScreen">
+        <!-- 动态游戏内容渲染 -->
+        <div class="story-card" id="storyCard">
+            <div class="story-text" id="storyText">加载中...</div>
+            <div id="extraContent"></div>
+            <div class="options-area" id="optionsArea"></div>
+        </div>
+    </div>
+    <div class="bottom-bar">
+        <button class="icon-btn" id="resetGameBtn">🔄 重启</button>
+        <button class="icon-btn" id="muteToggleBtn">🎧 音效开</button>
+        <span style="font-size:12px; color:#6f6990;">[ ARG · 深渊观测 ]</span>
+    </div>
+</div>
+
+<script>
+    // ---------- 音频引擎 (微恐氛围 + 交互音效) ----------
+    let audioCtx = null;
+    let isAudioEnabled = false;
+    let backgroundNode = null;      // 背景噪音节点（滤波器+噪音）
+    let gainNode = null;
+    let isMuted = false;
+    let backgroundStarted = false;
+
+    // 初始化音频上下文 (需要用户手势)
+    function initAudio() {
+        if (audioCtx) return audioCtx;
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        gainNode = audioCtx.createGain();
+        gainNode.gain.value = 0.35;  // 背景音量适中
+        gainNode.connect(audioCtx.destination);
+        return audioCtx;
+    }
+
+    // 生成幽暗背景噪音 (风声/低频嗡鸣) - 微恐
+    function startAmbientNoise() {
+        if (!audioCtx || backgroundStarted) return;
+        // 使用缓冲噪声 + 低通滤波
+        const bufferSize = 4096;
+        const noiseNode = audioCtx.createScriptProcessor(bufferSize, 1, 1);
+        noiseNode.onaudioprocess = function(e) {
+            const output = e.outputBuffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                // 棕色噪声风格
+                let white = Math.random() * 2 - 1;
+                output[i] = white * 0.25;
+            }
+        };
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 380;
+        filter.Q.value = 1.2;
+        const gainAmbient = audioCtx.createGain();
+        gainAmbient.gain.value = 0.18;
+        noiseNode.connect(filter);
+        filter.connect(gainAmbient);
+        gainAmbient.connect(gainNode);
+        backgroundNode = noiseNode;
+        backgroundStarted = true;
+        // 额外正弦低频脉动 (optional 增加压迫感)
+        const lfoOsc = audioCtx.createOscillator();
+        const lfoGain = audioCtx.createGain();
+        lfoOsc.type = "sine";
+        lfoOsc.frequency.value = 1.2;
+        lfoGain.gain.value = 0.04;
+        lfoOsc.connect(lfoGain);
+        lfoGain.connect(gainNode);
+        lfoOsc.start();
+        // 储存以便停止时处理，但重启游戏不关背景
+        if (!window._lfoNode) window._lfoNode = lfoOsc;
+    }
+
+    // 播放短促音效 (点击/选择)
+    function playClickSound() {
+        if (!audioCtx || !isAudioEnabled || isMuted) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = 880;
+        gain.gain.value = 0.15;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.5);
+        osc.stop(audioCtx.currentTime + 0.4);
+    }
+
+    // 较惊悚音效（微恐触发特殊场景）
+    function playDreadSound() {
+        if (!audioCtx || !isAudioEnabled || isMuted) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = "triangle";
+        osc.frequency.value = 220;
+        gain.gain.value = 0.2;
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 1.2);
+        osc.stop(audioCtx.currentTime + 1);
+        // 第二个谐波
+        const osc2 = audioCtx.createOscillator();
+        osc2.type = "sawtooth";
+        osc2.frequency.value = 320;
+        const gain2 = audioCtx.createGain();
+        gain2.gain.value = 0.08;
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+        osc2.start();
+        osc2.stop(audioCtx.currentTime + 0.9);
+    }
+
+    // ----- 游戏状态机 -----
+    let currentSceneId = "start";
+    let puzzleCorrect = false;   // 全局解谜标志
+
+    // 场景数据库
+    const scenes = {
+        start: {
+            desc: "📱 你从二手市场淘到一部旧手机。深夜，屏幕忽然亮起，一条未知消息：「你终于拿起我了… 别回头，她在你背后。」\n\n手机里只有一个叫「回声观测」的APP。\n你要打开它吗？",
+            options: [
+                { text: "📲 打开「回声观测」APP", next: "appOpen", action: () => { playClickSound(); } },
+                { text: "❌ 忽略并尝试关机", next: "badEnding_ignore", action: () => { playClickSound(); } }
+            ]
+        },
+        appOpen: {
+            desc: "📡 APP启动，界面显示一段老旧监控画面：一所废弃疗养院。\n底部闪烁文字：「未完结的日记：她消失在第6层。来找到真相，否则你会被永远困在2021年1月4日2时8分。」\n档案柜里有一份加密便签。",
+            options: [
+                { text: "🔍 调查档案柜 → 发现密码提示", next: "clueDiary", action: () => { playClickSound(); } },
+                { text: "🚪 直接前往疗养院B6层", next: "badEnding_rush", action: () => { playDreadSound(); } }
+            ]
+        },
+        clueDiary: {
+            desc: "📔 日记本皱巴巴，最后一页潦草字迹: \n「她总在镜子中低语。最安全的日子是生日, 1月4日2时8分，她那时候最安静... 守护密码是我的生日数字组合。」\n旁边附有照片：数字「1428」若隐若现。\n你在手机备忘录里记下了「1428」。",
+            options: [
+                { text: "📝 前往疗养院 · 电梯口", next: "elevatorLobby", action: () => { playClickSound(); } },
+                { text: "🧠 尝试回忆其他线索（无视密码）", next: "elevatorLobby", action: () => { playClickSound(); } }
+            ],
+            extraClue: true
+        },
+        elevatorLobby: {
+            desc: "🏚️ 废旧疗养院大厅，电梯按钮上只有B1-B5，但有人用血渍画了一个「B6」。\n电梯门自动打开，里面镜面布满裂痕。\n📢 广播杂音: 「请输入楼层权限代码...」一个虚拟面板出现，需要4位数字。",
+            options: [
+                { text: "🔢 输入密码（需解密）", next: "puzzleInput", action: () => { playClickSound(); } },
+                { text: "😰 强行走楼梯逃离", next: "badEnding_stairs", action: () => { playDreadSound(); } }
+            ]
+        },
+        puzzleInput: {
+            desc: "⌨️ 电子锁盘亮着幽蓝的光。提示语：「她生日的秘密刻在记忆里」\n（记得日记里的数字吗？）",
+            isPuzzle: true,
+            options: [
+                { text: "⬅️ 返回大厅", next: "elevatorLobby", action: () => { playClickSound(); } }
+            ]
+        },
+        afterCorrectPassword: {
+            desc: "🔓 密码正确！电梯下降，门开后是潮湿昏暗的长廊。墙壁上挂着你自己的照片，年份全是未来日期。\n突然手机收到消息: 「找到我的日记最后一页，烧掉它。」\n前方有两个岔路：左边档案室，右边礼拜堂。",
+            options: [
+                { text: "📂 左转档案室", next: "archiveEnd", action: () => { playClickSound(); } },
+                { text: "⛪ 右转礼拜堂", next: "chapelEnd", action: () => { playClickSound(); } }
+            ]
+        },
+        afterWrongPassword: {
+            desc: "⚠️ 密码错误。警报器响起，黑暗中涌出无数影子。手机屏幕碎裂，你感到被扼住喉咙... 意识消逝前看到镜中的自己咧嘴微笑。",
+            options: [
+                { text: "💀 结局 · 镜像囚笼 (重启)", next: "resetToStart", action: () => { playDreadSound(); } }
+            ],
+            isEnding: true
+        },
+        archiveEnd: {
+            desc: "📂 档案室深处发现烧焦的日记，火盆尚有余温。你将日记扔进火焰，刹那所有镜子流出泪水。一道白光亮起，你回到了二手市场摊位前。手机变成普通模型，但手腕多了一道钟表痕迹。\n你重获自由，却永远记得地下6楼。",
+            options: [
+                { text: "✨ 结局 · 时钟烙印 (好结局)", next: "resetToStart", action: () => { playClickSound(); } }
+            ],
+            isEnding: true
+        },
+        chapelEnd: {
+            desc: "⛪ 礼拜堂里有合唱娃娃，中间摆放一部座机。电话响起，接听后是你自己的声音:「别解开真相，你会替代她成为新的观测者。」你拒绝相信，打破镜子后一切崩塌——你成了这座疗养院的新管理员，永远徘徊。",
+            options: [
+                { text: "🕯️ 结局 · 永夜观测者 (中等结局)", next: "resetToStart", action: () => { playClickSound(); } }
+            ],
+            isEnding: true
+        },
+        badEnding_ignore: {
+            desc: "📴 你强行关机，但手机再次自动亮起，屏幕里伸出一只苍白的手... 房间温度骤降，你再也没有醒来。\n【结局 : 拒绝观测】",
+            options: [
+                { text: "⚰️ 重来一次", next: "resetToStart", action: () => { playDreadSound(); } }
+            ],
+            isEnding: true
+        },
+        badEnding_rush: {
+            desc: "🚪 B6层没有灯光，你摸黑走进，踩空坠落深井。回荡着低语：「密码是守护而非莽撞。」",
+            options: [
+                { text: "🕳️ 结局 · 盲目深渊 (重启)", next: "resetToStart", action: () => { playDreadSound(); } }
+            ],
+            isEnding: true
+        },
+        badEnding_stairs: {
+            desc: "🏃‍♂️ 楼梯无限循环，每层都是B6。数个小时后你瘫倒在地，手机电量耗尽，黑暗吞没一切。",
+            options: [
+                { text: "🌀 结局 · 无尽回廊", next: "resetToStart", action: () => { playDreadSound(); } }
+            ],
+            isEnding: true
+        },
+        resetToStart: {
+            desc: "✨ 回到最初，手机屏幕闪过一行字：「观测重启」。新的轮回开始...",
+            options: [
+                { text: "🔄 开始新的冒险", next: "start", action: () => { playClickSound(); puzzleCorrect = false; } }
+            ]
+        }
+    };
+
+    // 渲染当前场景
+    function renderScene(sceneId) {
+        const scene = scenes[sceneId];
+        if (!scene) {
+            renderScene("start");
+            return;
+        }
+        const storyDiv = document.getElementById("storyText");
+        const optionsDiv = document.getElementById("optionsArea");
+        const extraDiv = document.getElementById("extraContent");
+        extraDiv.innerHTML = "";
+        
+        // 显示描述文本
+        storyDiv.innerHTML = scene.desc.replace(/\n/g, '<br>');
+        
+        // 如果是解密场景，动态添加密码面板
+        if (scene.isPuzzle && sceneId === "puzzleInput") {
+            const puzzleHtml = `
+                <div class="puzzle-panel">
+                    <div class="puzzle-input">
+                        <input type="text" id="codeInput" placeholder="4位数字" maxlength="4" inputmode="numeric" pattern="\\d*">
+                        <button class="puzzle-submit" id="submitCode">验证密码</button>
+                    </div>
+                    <div style="font-size:13px; color:#b396cf;">💡 提示: 日记里提到的生日数字 —— 月/日/时/分？</div>
+                </div>
+            `;
+            extraDiv.innerHTML = puzzleHtml;
+            const submitBtn = document.getElementById("submitCode");
+            const inputField = document.getElementById("codeInput");
+            if (submitBtn) {
+                submitBtn.onclick = () => {
+                    playClickSound();
+                    const code = inputField.value.trim();
+                    if (code === "1428") {
+                        puzzleCorrect = true;
+                        renderScene("afterCorrectPassword");
+                    } else {
+                        puzzleCorrect = false;
+                        renderScene("afterWrongPassword");
+                    }
+                };
+            }
+            if (inputField) {
+                inputField.addEventListener("keypress", (e) => {
+                    if (e.key === "Enter") submitBtn.click();
+                });
+            }
+        }
+        
+        // 清除旧选项区域（非动态面板按钮），重新绘制选项按钮
+        optionsDiv.innerHTML = "";
+        if (!scene.isPuzzle) {
+            for (let opt of scene.options) {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    if (opt.action) opt.action();
+                    const nextScene = opt.next;
+                    if (nextScene === "resetToStart") {
+                        puzzleCorrect = false;
+                    }
+                    // 特殊重置全局标志
+                    if (nextScene === "start") puzzleCorrect = false;
+                    renderScene(nextScene);
+                    // 滚动到底部
+                    const screenDiv = document.getElementById("gameScreen");
+                    setTimeout(() => { screenDiv.scrollTop = screenDiv.scrollHeight; }, 30);
+                };
+                optionsDiv.appendChild(btn);
+            }
+        } else {
+            // 对于谜题场景，依然显示返回按钮
+            for (let opt of scene.options) {
+                const btn = document.createElement("button");
+                btn.className = "option-btn";
+                btn.innerText = opt.text;
+                btn.onclick = () => {
+                    if (opt.action) opt.action();
+                    renderScene(opt.next);
+                };
+                optionsDiv.appendChild(btn);
+            }
+        }
+        
+        // 额外ARG小彩蛋: 如果是在某个场景加隐藏颤动文字
+        if (sceneId === "clueDiary") {
+            const clueSpan = document.createElement("div");
+            clueSpan.className = "clue-text";
+            clueSpan.innerHTML = "📟 隐藏讯息 > 镜像倒转: ʇɥƃᴉɹ ʇou ɹoɹɹᴉɯ ǝɥʇ uᴉ ɥʇnɹʇ";
+            extraDiv.appendChild(clueSpan);
+        }
+        if (sceneId === "elevatorLobby" && !puzzleCorrect) {
+            const meta = document.createElement("div");
+            meta.className = "clue-text";
+            meta.innerHTML = "⚠️ 电梯镜面闪过一个高瘦人影，但身后空无一人。 ⚠️";
+            extraDiv.appendChild(meta);
+        }
+    }
+    
+    // 重置游戏完整状态
+    function resetGame() {
+        puzzleCorrect = false;
+        renderScene("start");
+        playClickSound();
+        const screenDiv = document.getElementById("gameScreen");
+        screenDiv.scrollTop = 0;
+    }
+    
+    // 更新状态栏时间
+    function updateTime() {
+        const now = new Date();
+        let hours = now.getHours();
+        let minutes = now.getMinutes();
+        const timeStr = `${hours}:${minutes.toString().padStart(2,'0')}`;
+        const timeElem = document.getElementById("liveTime");
+        if (timeElem) timeElem.innerText = timeStr;
+    }
+    
+    // 启动音频授权 (需要用户首次触摸)
+    let audioUnlocked = false;
+    function enableAudioOnFirstTouch() {
+        if (audioUnlocked) return;
+        const ctx = initAudio();
+        if (ctx.state === "suspended") {
+            ctx.resume().then(() => {
+                console.log("音频已激活");
+                isAudioEnabled = true;
+                startAmbientNoise();
+                audioUnlocked = true;
+                const muteBtn = document.getElementById("muteToggleBtn");
+                if (muteBtn) muteBtn.innerText = "🎧 音效开";
+                isMuted = false;
+                if (gainNode) gainNode.gain.value = 0.35;
+            }).catch(e => console.warn);
+        } else {
+            isAudioEnabled = true;
+            startAmbientNoise();
+            audioUnlocked = true;
+        }
+    }
+    
+    // 静音/取消静音
+    function toggleMute() {
+        if (!audioCtx || !isAudioEnabled) {
+            // 尝试启用
+            enableAudioOnFirstTouch();
+            return;
+        }
+        isMuted = !isMuted;
+        if (gainNode) {
+            gainNode.gain.value = isMuted ? 0 : 0.35;
+        }
+        const muteBtn = document.getElementById("muteToggleBtn");
+        muteBtn.innerText = isMuted ? "🔇 音效关" : "🎧 音效开";
+        if (!isMuted) playClickSound();
+    }
+    
+    // 全局重置 & 保留音频后台
+    document.getElementById("resetGameBtn").addEventListener("click", () => {
+        resetGame();
+        if (!audioUnlocked) enableAudioOnFirstTouch();
+        else playClickSound();
+    });
+    document.getElementById("muteToggleBtn").addEventListener("click", () => {
+        if (!audioUnlocked) enableAudioOnFirstTouch();
+        toggleMute();
+    });
+    
+    // 监听整个容器初次触摸启动音频
+    const container = document.getElementById("gameContainer");
+    container.addEventListener("touchstart", () => {
+        if (!audioUnlocked) enableAudioOnFirstTouch();
+    }, { once: false });
+    container.addEventListener("click", () => {
+        if (!audioUnlocked) enableAudioOnFirstTouch();
+    });
+    
+    // 显示初始场景
+    updateTime();
+    setInterval(updateTime, 1000);
+    renderScene("start");
+    // 预置一个ARG小彩蛋: 控制台输出隐藏消息
+    console.log("%c⚠️ 你发现了隐藏的观测记录: 镜子背后的真相须由你破解。 密码是生日时刻 %c1428", "color:#b77dcf;font-size:14px", "color:#ffaa66");
+</script>
+</body>
+</html>
